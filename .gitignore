@@ -8,31 +8,57 @@
 *.tfvars.json
 override.tf
 override.tf.json
-*_override.tf
-*_override.tf.json
 crash.log
-crash.*.log
 
-# ─── Environment ──────────────────────────────────────────────
-.env
-.env.*
+# ─── Sensitive Files ──────────────────────────────────────────
 *.pem
 *.key
+*.p12
+*.pfx
+.env
+.env.*
+secrets.yaml
+*-secrets.yaml
 
 # ─── Python ───────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 .venv/
 venv/
+env/
 *.egg-info/
+dist/
+build/
 
 # ─── Docker ───────────────────────────────────────────────────
 *.log
+docker-compose.override.yml
+
+# ─── Kubernetes ───────────────────────────────────────────────
+kubeconfig
+*.kubeconfig
+kube-config
+
+# ─── Helm ─────────────────────────────────────────────────────
+helm/*/charts/
+helm/*/Chart.lock
+*.tgz
+
+# ─── ArgoCD ───────────────────────────────────────────────────
+argocd/credentials/
 
 # ─── OS ───────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # ─── VS Code ──────────────────────────────────────────────────
 .vscode/
+*.code-workspace
+
+# ─── AWS ──────────────────────────────────────────────────────
+.aws/
+aws-credentials
+/tmp/
