@@ -67,5 +67,5 @@ variable "eks_node_max" {
 variable "github_repo" {
   description = "GitHub repo in format org/repo-name"
   type        = string
-  default     = "rasika08/ecommerce-devsecops"
+  default     = "rasika-08061998/ecommerce-devsecops"
 }

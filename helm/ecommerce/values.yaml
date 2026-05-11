@@ -1,0 +1,35 @@
+global:
+  registry: 528757804354.dkr.ecr.ap-south-1.amazonaws.com
+  tag: latest
+  environment: dev
+
+services:
+  userService:
+    name: user-service
+    image: ecommerce-dev-user-service
+    port: 8001
+    replicas: 1
+
+  productService:
+    name: product-service
+    image: ecommerce-dev-product-service
+    port: 8002
+    replicas: 1
+
+  orderService:
+    name: order-service
+    image: ecommerce-dev-order-service
+    port: 8003
+    replicas: 1
+
+  paymentService:
+    name: payment-service
+    image: ecommerce-dev-payment-service
+    port: 8004
+    replicas: 1
+
+  apiGateway:
+    name: api-gateway
+    image: ecommerce-dev-api-gateway
+    port: 8000
+    replicas: 1
