@@ -7,6 +7,11 @@ metadata:
   namespace: ecommerce
   labels:
     app: {{ $svc.name }}
+  {{- if eq ($svc.serviceType | default "ClusterIP") "LoadBalancer" }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  {{- end }}
 spec:
   selector:
     app: {{ $svc.name }}
