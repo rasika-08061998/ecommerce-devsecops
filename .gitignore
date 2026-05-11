@@ -62,3 +62,5 @@ desktop.ini
 .aws/
 aws-credentials
 /tmp/
+
+ai-scripts/.env
