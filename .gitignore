@@ -1,0 +1,38 @@
+# ─── Terraform ────────────────────────────────────────────────
+**/.terraform/
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# ─── Environment ──────────────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+
+# ─── Python ───────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ─── Docker ───────────────────────────────────────────────────
+*.log
+
+# ─── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── VS Code ──────────────────────────────────────────────────
+.vscode/
