@@ -9,6 +9,7 @@ services:
     image: ecommerce-dev-user-service
     port: 8001
     replicas: 1
+    serviceType: ClusterIP
     env:
       DATABASE_URL: "postgresql://postgres:postgres@postgres-users-postgresql:5432/users_db"
       JWT_SECRET_KEY: "devsecops-secret-key-2026"
@@ -19,6 +20,7 @@ services:
     image: ecommerce-dev-product-service
     port: 8002
     replicas: 1
+    serviceType: ClusterIP
     env:
       DATABASE_URL: "postgresql://postgres:postgres@postgres-products-postgresql:5432/products_db"
 
@@ -27,6 +29,7 @@ services:
     image: ecommerce-dev-order-service
     port: 8003
     replicas: 1
+    serviceType: ClusterIP
     env:
       DATABASE_URL: "postgresql://postgres:postgres@postgres-orders-postgresql:5432/orders_db"
       USER_SERVICE_URL: "http://user-service:8001"
@@ -37,6 +40,7 @@ services:
     image: ecommerce-dev-payment-service
     port: 8004
     replicas: 1
+    serviceType: ClusterIP
     env:
       DATABASE_URL: "postgresql://postgres:postgres@postgres-payments-postgresql:5432/payments_db"
       ORDER_SERVICE_URL: "http://order-service:8003"
@@ -46,6 +50,7 @@ services:
     image: ecommerce-dev-api-gateway
     port: 8000
     replicas: 1
+    serviceType: LoadBalancer
     env:
       USER_SERVICE_URL: "http://user-service:8001"
       PRODUCT_SERVICE_URL: "http://product-service:8002"
