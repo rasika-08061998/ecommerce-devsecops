@@ -32,6 +32,8 @@ jobs:
             port: 8004
           - name: api-gateway
             port: 8000
+          - name: frontend
+            port: 80
 
     steps:
       - name: Checkout code
