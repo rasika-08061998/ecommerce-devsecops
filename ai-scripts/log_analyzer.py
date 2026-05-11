@@ -62,45 +62,63 @@ def get_deployment_logs(namespace: str, deployment: str, lines: int = 100) -> st
 
 
 def analyze_logs_with_ai(service: str, logs: str) -> dict:
-    """Use Claude AI to analyze logs for anomalies."""
-    prompt = f"""
-You are a DevSecOps expert analyzing application logs.
+    """Rule-based log analysis without AI API."""
+    logs_lower = logs.lower()
 
-Service: {service}
-Logs:
-{logs[:3000]}
+    error_count = logs_lower.count("error")
+    warning_count = logs_lower.count("warning") + logs_lower.count("warn")
 
-Analyze these logs and provide a JSON response with:
-{{
-  "status": "healthy|warning|critical",
-  "error_count": <number>,
-  "warning_count": <number>,
-  "anomalies": ["list of detected anomalies"],
-  "security_issues": ["list of security concerns"],
-  "performance_issues": ["list of performance problems"],
-  "recommendations": ["list of action items"],
-  "summary": "one line summary"
-}}
+    anomalies = []
+    security_issues = []
+    performance_issues = []
+    recommendations = []
 
-Return ONLY the JSON, no other text.
-"""
-    response = ai_client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1000,
-        messages=[{"role": "user", "content": prompt}]
-    )
+    # Detect anomalies
+    if "connection refused" in logs_lower:
+        anomalies.append("Database/service connection refused")
+        recommendations.append("Check if dependent services are running")
 
-    try:
-        return json.loads(response.content[0].text)
-    except Exception:
-        return {
-            "status": "unknown",
-            "summary": response.content[0].text,
-            "anomalies": [],
-            "security_issues": [],
-            "recommendations": []
-        }
+    if "timeout" in logs_lower:
+        anomalies.append("Timeout detected in service calls")
+        recommendations.append("Check network policies and service endpoints")
 
+    if "out of memory" in logs_lower or "oom" in logs_lower:
+        anomalies.append("Out of memory error detected")
+        recommendations.append("Increase memory limits in Helm values.yaml")
+
+    if "unauthorized" in logs_lower or "403" in logs_lower:
+        security_issues.append("Unauthorized access attempts detected")
+        recommendations.append("Review IAM roles and RBAC policies")
+
+    if "sql" in logs_lower and "error" in logs_lower:
+        anomalies.append("SQL errors detected")
+        recommendations.append("Check database migrations and schema")
+
+    if "500" in logs_lower:
+        performance_issues.append("HTTP 500 errors detected")
+        recommendations.append("Review application error handling")
+
+    if not anomalies and not security_issues:
+        recommendations.append("No issues detected — service running normally")
+
+    # Determine status
+    if any("critical" in a.lower() or "oom" in a.lower() for a in anomalies):
+        status = "critical"
+    elif error_count > 10 or security_issues:
+        status = "warning"
+    else:
+        status = "healthy"
+
+    return {
+        "status": status,
+        "error_count": error_count,
+        "warning_count": warning_count,
+        "anomalies": anomalies or ["None detected"],
+        "security_issues": security_issues or ["None detected"],
+        "performance_issues": performance_issues or ["None detected"],
+        "recommendations": recommendations,
+        "summary": f"{error_count} errors, {warning_count} warnings found"
+    }
 
 def display_analysis(service: str, analysis: dict):
     """Display analysis results."""
