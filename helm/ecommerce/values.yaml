@@ -56,3 +56,11 @@ services:
       PRODUCT_SERVICE_URL: "http://product-service:8002"
       ORDER_SERVICE_URL: "http://order-service:8003"
       PAYMENT_SERVICE_URL: "http://payment-service:8004"
+
+  frontend:
+    name: frontend
+    image: ecommerce-dev-frontend
+    port: 80
+    replicas: 1
+    serviceType: LoadBalancer
+    env: {}
