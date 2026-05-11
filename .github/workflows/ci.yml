@@ -1,0 +1,72 @@
+name: CI — Build, Scan & Push to ECR
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REGISTRY: 528757804354.dkr.ecr.ap-south-1.amazonaws.com
+  EKS_CLUSTER_NAME: ecommerce-dev-cluster
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    name: Build & Push — ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: user-service
+            port: 8001
+          - name: product-service
+            port: 8002
+          - name: order-service
+            port: 8003
+          - name: payment-service
+            port: 8004
+          - name: api-gateway
+            port: 8000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::528757804354:role/ecommerce-dev-github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        id: vars
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ env.ECR_REGISTRY }}/ecommerce-dev-${{ matrix.service.name }}:${{ env.IMAGE_TAG }} \
+            -t ${{ env.ECR_REGISTRY }}/ecommerce-dev-${{ matrix.service.name }}:latest \
+            services/${{ matrix.service.name }}/
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REGISTRY }}/ecommerce-dev-${{ matrix.service.name }}:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: 0
+          severity: CRITICAL,HIGH
+
+      - name: Push image to ECR
+        run: |
+          docker push ${{ env.ECR_REGISTRY }}/ecommerce-dev-${{ matrix.service.name }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY }}/ecommerce-dev-${{ matrix.service.name }}:latest
